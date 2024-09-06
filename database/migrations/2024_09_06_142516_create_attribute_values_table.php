@@ -9,10 +9,12 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
         Schema::create('attribute_values', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('attribute_id')->constrained()->onDelete('cascade'); // L'attribut correspondant (ex: Taille)
+            $table->string('value'); // Ex: "S", "M", "L", "Rouge", etc.
             $table->timestamps();
         });
     }
