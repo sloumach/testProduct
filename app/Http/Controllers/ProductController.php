@@ -35,34 +35,28 @@ class ProductController extends Controller
 
     // Récupérer le prix de la variation en fonction des attributs sélectionnés
     public function getPrice(Request $request)
-{
-    // Validation des données envoyées par l'AJAX
-    $validated = $request->validate([
-        'product_id' => 'required|integer|exists:products,id',
-        'size_id' => 'required|integer|exists:attribute_values,id',
-        'color_id' => 'required|integer|exists:attribute_values,id',
-    ]);
+    {
+        // Validation des données envoyées par l'AJAX
+        $validated = $request->validate([
+            'product_id' => 'required|integer|exists:products,id',
+            'size_id' => 'required|integer|exists:attribute_values,id',
+            'color_id' => 'required|integer|exists:attribute_values,id',
+        ]);
+        $price = $this->priceService->getProductPrice(
+            $validated['product_id'],
+            $validated['size_id'],
+            $validated['color_id']
+        );
 
-    // Cherche la variation de produit correspondant à la taille ET à la couleur
-    $productVariation = ProductVariation::where('product_id', $validated['product_id'])
-        ->whereHas('attributes', function($query) use ($validated) {
-            // Vérifie la taille
-            $query->where('attribute_value_id', $validated['size_id']);
-        })
-        ->whereHas('attributes', function($query) use ($validated) {
-            // Vérifie la couleur
-            $query->where('attribute_value_id', $validated['color_id']);
-        })
-        ->first();
 
-    // Si la variation est trouvée, retourner son prix
-    if ($productVariation) {
-        return response()->json(['price' => $productVariation->price]);
+        // Si la variation est trouvée, retourner son prix
+        if ($price) {
+            return response()->json(['price' => $price]);
+        }
+
+        // Si aucune variation n'est trouvée, retourner une erreur
+        return response()->json(['message' => 'Variation non trouvée', 'price' => null], 404);
     }
-
-    // Si aucune variation n'est trouvée, retourner une erreur
-    return response()->json(['message' => 'Variation non trouvée', 'price' => null], 404);
-}
 
     public function create()
     {

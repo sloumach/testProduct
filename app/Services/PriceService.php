@@ -16,6 +16,7 @@ class PriceService
      */
     public function getProductPrice(int $productId, int $sizeId, int $colorId): ?float
     {
+
         // Cherche la variation de produit correspondant à la taille ET à la couleur
         $productVariation = ProductVariation::where('product_id', $productId)
             ->whereHas('attributes', function($query) use ($sizeId) {
