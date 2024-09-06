@@ -6,9 +6,16 @@ use App\Models\Product;
 use App\Models\AttributeValue;
 use App\Models\ProductVariation;
 use Illuminate\Http\Request;
+use App\Services\PriceService;
 
 class ProductController extends Controller
 {
+    protected $priceService;
+
+    public function __construct(PriceService $priceService)
+    {
+        $this->priceService = $priceService;
+    }
     // Afficher le produit et ses attributs
     public function show($id)
     {
@@ -29,30 +36,26 @@ class ProductController extends Controller
     // Récupérer le prix de la variation en fonction des attributs sélectionnés
     public function getPrice(Request $request)
     {
-        // Cherche la variation de produit correspondant à la taille ET à la couleur
-        $productVariation = ProductVariation::where('product_id', $request->product_id)
-            ->whereHas('attributes', function($query) use ($request) {
-                // Vérifie la taille
-                $query->where('attribute_value_id', $request->size_id)
-                      ->whereHas('attribute', function ($q) {
-                          $q->where('name', 'Taille');
-                      });
-            })
-            ->whereHas('attributes', function($query) use ($request) {
-                // Vérifie la couleur
-                $query->where('attribute_value_id', $request->color_id)
-                      ->whereHas('attribute', function ($q) {
-                          $q->where('name', 'Couleur');
-                      });
-            })
-            ->first();
+        // Validation des données
+        $validated = $request->validate([
+            'product_id' => 'required|integer|exists:products,id',
+            'size_id' => 'required|integer|exists:attribute_values,id',
+            'color_id' => 'required|integer|exists:attribute_values,id',
+        ]);
 
-        // Si la variation est trouvée, retourner son prix
-        if ($productVariation) {
-            return response()->json(['price' => $productVariation->price]);
+        // Utilisation du service pour obtenir le prix
+        $price = $this->priceService->getProductPrice(
+            $validated['product_id'],
+            $validated['size_id'],
+            $validated['color_id']
+        );
+
+        // Si le prix est trouvé, le retourner
+        if ($price !== null) {
+            return response()->json(['price' => $price]);
         }
 
-        // Si aucune variation n'est trouvée, retourner une erreur
+        // Si aucune variation n'est trouvée, retourner un message d'erreur
         return response()->json(['message' => 'Variation non trouvée', 'price' => null], 404);
     }
 
