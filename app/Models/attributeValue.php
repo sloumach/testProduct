@@ -18,6 +18,6 @@ class AttributeValue extends Model
     // Une valeur d'attribut peut être utilisée dans plusieurs variations de produit
     public function productVariations()
     {
-        return $this->belongsToMany(ProductVariation::class, 'product_variation_attribute_value');
+        return $this->belongsToMany(ProductVariation::class, 'product_variation_attribute_values');
     }
 }

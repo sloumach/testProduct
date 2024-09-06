@@ -18,6 +18,6 @@ class ProductVariation extends Model
     // Une variation de produit a plusieurs valeurs d'attributs (ex: "Taille: M", "Couleur: Rouge")
     public function attributes()
     {
-        return $this->belongsToMany(AttributeValue::class, 'product_variation_attribute_value');
+        return $this->belongsToMany(AttributeValue::class, 'product_variation_attribute_values');
     }
 }
