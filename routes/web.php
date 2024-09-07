@@ -20,3 +20,4 @@ Route::get('/product/{id}', [ProductController::class, 'show'])->name('product.s
 Route::post('/product/price', [ProductController::class, 'getPrice'])->name('product.price');
 Route::get('/admin/product/create', [ProductController::class, 'create'])->name('product.create');
 Route::post('/admin/product/store', [ProductController::class, 'store'])->name('product.store');
+Route::post('/admin/attributes', [ProductController::class, 'storeAttributes'])->name('attributes.store');
