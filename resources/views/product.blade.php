@@ -47,58 +47,43 @@
         });
 
         function updatePrice() {
-            console.log('1: Commence le processus d\'ajustement de prix');
             var selectedAttributes = {};
 
             // Parcourir tous les attributs sélectionnés et collecter leurs valeurs
             $('.attribute-select').each(function() {
                 var attributeId = $(this).attr('id').replace('attribute_', '');
                 var valueId = $(this).val();
-
-                // Ajouter l'attribut s'il est sélectionné
                 if (valueId) {
                     selectedAttributes[attributeId] = valueId;
                 }
             });
 
-            console.log('2: Attributs sélectionnés:', selectedAttributes);
+            console.log('Attributs envoyés:', selectedAttributes); // Ajoute ce log pour voir ce qui est envoyé
 
-            // Si au moins un attribut a été sélectionné
-            if (Object.keys(selectedAttributes).length > 0) {
-                console.log('3: Attributs disponibles sélectionnés, appel AJAX');
-
+            if (Object.keys(selectedAttributes).length === $('.attribute-select').length) {
                 $.ajax({
-                    url: "{{ route('product.price') }}", // Route pour récupérer le prix via AJAX
+                    url: "{{ route('product.price') }}",
                     method: 'POST',
                     data: {
                         product_id: {{ $product->id }},
                         selected_attributes: selectedAttributes
                     },
-                    beforeSend: function() {
-                        console.log('Requête AJAX en cours...');
-                    },
                     success: function(response) {
-                        console.log('4: Réponse reçue', response); // Affichez la réponse complète
                         if (response.price) {
-                            $('#price').text(response.price); // Mise à jour du prix
+                            $('#price').text(response.price);
                         } else {
                             $('#price').text('Non disponible');
                         }
                     },
                     error: function(xhr, status, error) {
-                        console.log('5: Erreur dans la requête AJAX');
-                        console.log("Statut: ", status);
-                        console.log("Erreur: ", error);
-                        console.log("Réponse: ", xhr
-                        .responseText); // Affiche la réponse d'erreur complète
-                        alert('Erreur lors de la récupération du prix.');
+                        console.log("Erreur: ", xhr.responseText);
                     }
                 });
-
             } else {
-                console.log('3: Aucun attribut sélectionné, aucun appel AJAX');
+                console.log('Tous les attributs ne sont pas encore sélectionnés');
             }
         }
+
     });
 </script>
 
