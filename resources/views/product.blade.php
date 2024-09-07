@@ -58,7 +58,6 @@
                 }
             });
 
-            console.log('Attributs envoyés:', selectedAttributes); // Ajoute ce log pour voir ce qui est envoyé
 
             if (Object.keys(selectedAttributes).length === $('.attribute-select').length) {
                 $.ajax({
@@ -76,11 +75,12 @@
                         }
                     },
                     error: function(xhr, status, error) {
-                        console.log("Erreur: ", xhr.responseText);
+                        alert("Erreur: " + xhr.responseText); // Afficher l'erreur dans une alerte
                     }
+
                 });
             } else {
-                console.log('Tous les attributs ne sont pas encore sélectionnés');
+                alert('Tous les attributs ne sont pas encore sélectionnés');
             }
         }
 
